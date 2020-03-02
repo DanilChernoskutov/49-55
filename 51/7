@@ -1,0 +1,52 @@
+register.php 
+
+<?php 
+error_reporting(E_ALL); 
+ini_set('display_errors', 'on'); 
+
+$host = 'localhost'; 
+$user = 'root'; 
+$password = ''; 
+$dbName = 'DanilChernoskutov'; 
+
+$link = mysqli_connect($host, $user, $password, $dbName); 
+mysqli_query($link, "SET NAMES 'utf8'"); 
+
+session_start(); 
+
+if (!empty($_POST['password']) and !empty($_POST['login'])) { 
+$login = $_POST['login']; 
+$password = $_POST['password']; 
+$email=$_POST['email']; 
+$birthdate=$_POST['birthdate']; 
+$registration_date=date('Y-m-d'); 
+
+if($_POST['password'] == $_POST['confirm']) { 
+
+$query = "SELECT * FROM users5 WHERE login = '$login'"; 
+$user = mysqli_fetch_assoc(mysqli_query($link, $query)); 
+
+if(empty($user)) { 
+
+
+$query = "INSERT INTO users5 SET login='$login', password='$password', email='$email', birthdate='$birthdate', registration_date='$registration_date' "; 
+mysqli_query($link, $query) or die(mysqli_error($link)); 
+
+$_SESSION['auth'] = true; 
+$id = mysqli_insert_id($link); 
+$_SESSION['id'] = $id; 
+$_SESSION['logName'] = $login; 
+header('Location: index.php'); 
+} else { 
+echo 'Такой логин уже существует'; 
+include 'registerForm.php'; 
+} 
+}else { 
+echo 'Пароль введен не корректно'; 
+include 'registerForm.php'; 
+} 
+} else { 
+include 'registerForm.php'; 
+} 
+?> 
+<meta charset="utf-8">
