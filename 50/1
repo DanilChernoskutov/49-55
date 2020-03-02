@@ -1,0 +1,58 @@
+login.php 
+
+<?php 
+error_reporting(E_ALL); 
+ini_set('display_errors', 'on'); 
+
+$host = 'localhost'; 
+$user = 'root'; 
+$password = ''; 
+$dbName = 'DanilChernoskutov'; 
+
+$link = mysqli_connect($host, $user, $password, $dbName); 
+mysqli_query($link, "SET NAMES 'utf8'"); 
+
+session_start(); 
+
+$form = ' 
+<form method="POST"> 
+<input name="login"> 
+<input type="password" name="password"> 
+<input type="submit"> 
+</form> 
+'; 
+
+
+if (!empty($_POST['password']) and !empty($_POST['login'])) { 
+$login = $_POST['login']; 
+$password = $_POST['password']; 
+
+$query = "SELECT * FROM users WHERE login='$login' AND password='$password'"; 
+$result = mysqli_query($link, $query); 
+
+$user = mysqli_fetch_assoc($result); 
+
+if(!empty($user)) { 
+$_SESSION['auth'] = true; 
+$_SESSION['mess'] = [ 
+'text' => 'Авторизован.' 
+]; 
+header('Location: index.php'); die(); 
+} else { 
+echo $form; 
+} 
+} else { 
+echo $form; 
+} 
+
+1.php 
+
+<?php 
+session_start(); 
+if(!empty($_SESSION['auth'])) { 
+echo 'Авторизован'; 
+} else { 
+echo '<a href="login.php">Авторизируйтесь</a>'; 
+} 
+?> 
+<meta charset="utf-8">
