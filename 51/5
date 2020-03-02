@@ -1,0 +1,48 @@
+register.php 
+
+<?php 
+error_reporting(E_ALL); 
+ini_set('display_errors', 'on'); 
+
+$host = 'localhost'; 
+$user = 'root'; 
+$password = ''; 
+$dbName = 'DanilChernoskutov'; 
+
+$link = mysqli_connect($host, $user, $password, $dbName); 
+mysqli_query($link, "SET NAMES 'utf8'"); 
+
+session_start(); 
+
+if (!empty($_POST['password']) and !empty($_POST['login'])) { 
+$login = $_POST['login']; 
+$password = $_POST['password']; 
+$email=$_POST['email']; 
+$birthdate=$_POST['birthdate']; 
+$registration_date=date('Y-m-d'); 
+
+$query = "INSERT INTO users5 SET login='$login', password='$password', email='$email', birthdate='$birthdate', registration_date='$registration_date' "; 
+mysqli_query($link, $query) or die(mysqli_error($link)); 
+
+$_SESSION['auth'] = true; 
+$id = mysqli_insert_id($link); 
+$_SESSION['id'] = $id; 
+$_SESSION['logName'] = $login; 
+header('Location: index.php'); 
+}else{ 
+?> 
+
+<form method="POST"> 
+<label for="login">Введите логин:</label><br> 
+<input name="login"><br><br> 
+<label for="email">Введите Email:</label><br> 
+<input name="email"><br><br> 
+<label for="password">Введите пароль:</label><br> 
+<input type="password" name="password"><br><br> 
+<label for="birthdate">Введите дату рождения:</label><br> 
+<input name="birthdate"><br><br> 
+<input type="submit"> 
+</form> 
+<?php }?> 
+
+<meta charset="utf-8"> 
