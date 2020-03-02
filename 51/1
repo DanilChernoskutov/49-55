@@ -1,0 +1,29 @@
+register.php 
+
+<?php 
+error_reporting(E_ALL); 
+ini_set('display_errors', 'on'); 
+
+$host = 'localhost'; 
+$user = 'root'; 
+$password = ''; 
+$dbName = 'DanilChernoskutov'; 
+
+$link = mysqli_connect($host, $user, $password, $dbName); 
+mysqli_query($link, "SET NAMES 'utf8'"); 
+
+if (!empty($_POST['password']) and !empty($_POST['login'])) { 
+$login = $_POST['login']; 
+$password = $_POST['password']; 
+
+$query = "INSERT INTO users SET login='$login', password='$password'"; 
+mysqli_query($link, $query); 
+} 
+?> 
+<form method="POST"> 
+<input name="login"> 
+<input type="password" name="password"> 
+<input type="submit"> 
+</form> 
+
+<meta charset="utf-8"> 
