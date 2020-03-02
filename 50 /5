@@ -1,0 +1,33 @@
+logout.php 
+
+<?php 
+session_start(); 
+
+$_SESSION['auth'] = null; 
+$_SESSION['mess'] = [ 
+'text' => 'Вы успешно вышли из авторизации' 
+]; 
+
+header('Location: index.php'); 
+?> 
+
+
+index.php 
+
+<?php 
+error_reporting(E_ALL); 
+ini_set('display_errors', 'on'); 
+
+session_start(); 
+
+echo 'Текст для всех пользователей<br>'; 
+
+if(!empty($_SESSION['auth'])) { 
+echo 'Вы авторизовались как '. $_SESSION['logName'] .'<br>'; 
+} else { 
+echo 'Вы успешно вышли из авторизации'; 
+} 
+?> 
+<a href="logout.php">logout</a> 
+
+<meta charset="utf-8">
