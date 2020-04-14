@@ -1,0 +1,43 @@
+Реализуйте описанную смену пароля.
+
+changePassword.php:
+
+<?php
+session_start();
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$db_name = 'Baza.php';
+
+$link = mysqli_connect($host,$user,$password,$db_name);
+
+$id = $_SESSION['id'];
+$query = "SELECT * FROM users WHERE id = '$id'";
+$result = mysqli_query($link,$query);
+
+$us = mysqli_fetch_assoc($result);
+$hash = $us['password'];
+
+if(password_verify($_POST['old_password'],$hash))
+{
+unset($_SESSION['error']);
+$new_password_hash = password_hash($_POST['new_password'],PASSWORD_DEFAULT);
+$query = "UPDATE users SET password = '$new_password_hash' WHERE id='$id'";
+mysqli_query($link,$query);
+header ('Location: changePassword.php');
+}
+else
+{
+$_SESSION['error']='Вы ввели неверный пароль!';
+}
+?>
+
+<meta charset='utf-8'>
+<form method = 'POST'>
+<?php echo $_SESSION['error'];?>
+Введите старый пароль:<br><br>
+<input name='old_password' type='text'><br><br>
+Введите новый пароль:<br><br>
+<input name='new_password' type='text'><br><br>
+<input type='submit' value='Поменять пароль'><br><br>
+</form>
