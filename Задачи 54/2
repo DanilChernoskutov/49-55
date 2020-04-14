@@ -1,0 +1,46 @@
+<?php
+session_start();
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$db_name = 'Baza.php';
+
+$link = mysqli_connect($host,$user,$password,$db_name) or die(mysqli_error($link));
+
+if(!empty($_GET['id']))
+{
+$id = $_GET['id'];
+}
+
+$query ="SELECT * FROM users WHERE id='$id'";
+$result = mysqli_query($link,$query);
+$us = mysqli_fetch_assoc($result);
+
+$login = $us['login'];
+$mail = $us['e-mail'];
+$birthday = $us['birthday'];
+$registration_date = $us['registration_date'];
+
+$name = $us['name'];
+$surname = $us['surname'];
+$patronymic = $us['patronymic'];
+
+$born = new DateTime($birthday); // дата рождения
+$age = $born->diff(new DateTime)->format('%y');
+
+?>
+
+<meta charset ='UTF-8'>
+Профиль пользователя:<br><br>
+Логин:
+<?php echo $login;?><br><br>
+Имя:
+<?php echo $name;?><br><br>
+Фамилия:
+<?php echo $surname;?><br><br>
+Отчество:
+<?php echo $patronymic;?><br><br>
+Дата рождения:
+<?php echo $birthday;?><br><br>
+Возраст:
+<?php echo $age;?><br><br>
