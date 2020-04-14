@@ -1,0 +1,40 @@
+Выведите на странице admin.php список всех зарегистрированных пользователей вашего сайта в виде таблицы table. Пусть в таблице будут две колонки: логин и статус.
+
+<?php
+session_start();
+if($_SESSION['auth'] and $_SESSION['status']=='admin')
+{
+echo 'admin.php';
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$db_name = 'Baza.php';
+
+$link = mysqli_connect($host,$user,$password,$db_name) or die(mysqli_error($link));
+
+$query ="SELECT login,status FROM users";
+$result = mysqli_query($link,$query) or die(mysqli_error($link));
+
+for($data=[];$row=mysqli_fetch_assoc($result);$data[]=$row);
+
+$content ="<table> <tr><th>login</th><th>status</th></tr>";
+foreach($data as $us)
+{
+$content.="<tr>
+<td>{$us['login']}</td>
+<td>{$us['status']}</td>
+</tr>";
+}
+$content.='</table>';
+echo $content;
+
+?>
+<meta charset ='UTF-8'>
+<?php
+}
+else
+{
+
+echo 'У вас нет прав доступа к данной странице!';
+}
+?>
