@@ -1,0 +1,52 @@
+Исправьте ваш код в соответствии с описанным.
+
+<?php
+session_start();
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$db_name = 'Baza.php';
+
+$link = mysqli_connect($host,$user,$password,$db_name);
+
+$id = $_SESSION['id'];
+$query = "SELECT * FROM users WHERE id = '$id'";
+$result = mysqli_query($link,$query);
+
+$us = mysqli_fetch_assoc($result);
+$hash = $us['password'];
+if($_POST['new_password']==$_POST['new_password_confirm'])
+{
+if(password_verify($_POST['old_password'],$hash))
+{
+$_SESSION['message']='Пароль успешно изменён!';
+unset($_SESSION['error']);
+$new_password_hash = password_hash($_POST['new_password'],PASSWORD_DEFAULT);
+$query = "UPDATE users SET password = '$new_password_hash' WHERE id='$id'";
+mysqli_query($link,$query);
+}
+else
+{
+unset($_SESSION['message']);
+$_SESSION['error']='Вы ввели неверный пароль!';
+}
+}
+else
+{
+unset($_SESSION['message']);
+$_SESSION['error']='Новые пароли не совпадают!';
+}
+?>
+
+<meta charset='utf-8'>
+<form method = 'POST'>
+<?php echo $_SESSION['error'];?>
+<?php echo $_SESSION['message'];?>
+Введите старый пароль:<br><br>
+<input name='old_password' type='password'><br><br>
+Введите новый пароль:<br><br>
+<input name='new_password' type='password'><br><br>
+Подтвердите новый пароль:<br><br>
+<input name='new_password_confirm' type='password'><br><br>
+<input type='submit' value='Поменять пароль'><br><br>
+</form>
