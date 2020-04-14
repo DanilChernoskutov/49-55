@@ -1,0 +1,77 @@
+Задача 3 : 
+ 
+Модифицируйте ваш код так, чтобы логин был длиной от 4 до 10 символов. В случае, если это не так, выводите сообщение об этом над формой.
+
+<?php 
+error_reporting(E_ALL); 
+ini_set('display_errors', 'on'); 
+session_start(); 
+include 'baza.php'; 
+ 
+// Если форма регистрации отправлена... 
+ 
+ 
+if (!empty($_POST['login']) and !empty($_POST['password']) and !empty($_POST['confirm']) ) { 
+ if ($_POST['password'] == $_POST['confirm']) { 
+ 
+ // Пишем логин и пароль из формы в переменные для удобства работы: 
+ $login = $_POST['login']; 
+ $password = $_POST['password']; 
+ $date = $_POST['date']; 
+ $reg_date = date('Y-m-d'); // получим текущую дату средствами PHP 
+ $email = $_POST['email']; 
+// Длина логина 
+ $loginStr = strlen($login); 
+// проверяем с помощью регулярного выражения логин 
+ if (preg_match('#\b[a-zA-Z]+[a-zA-Z0-9]+#', $login)) { 
+ if ($loginStr > 3 and $loginStr < 11){ 
+ // Пробуем получить юзера с таким логином 
+ $query = "SELECT * FROM users WHERE login='$login'"; 
+ $user = mysqli_fetch_assoc(mysqli_query($link, $query)); 
+ 
+ // Если юзера с таким логином нет 
+ if (empty($user)) { 
+ 
+ // Формируем и отсылаем SQL запрос: 
+ $query = "INSERT INTO users SET login='$login', password='$password', date = '$date', registration_date ='$reg_date', email = '$email'"; 
+ mysqli_query($link, $query); 
+ 
+ // Пишем в сессию пометку об авторизации: 
+ $_SESSION['auth'] = true; 
+ $_SESSION['login'] = $login; 
+ 
+ // Получаем id вставленной записи и пишем его в сессию: 
+ $id = mysqli_insert_id($link); 
+ $_SESSION['id'] = $id; 
+ 
+ header('Location: register.php'); die(); 
+ } else { 
+ // Логин занят, выведем сообщение об этом 
+ echo "Логин " . $login . " занят" . " ,введите другой логин"; 
+ 
+ } 
+ }else { 
+ // Логин должен быть от 4 до 10 символов 
+ echo "Логин должен быть от 4 до 10 символов" ; 
+ } 
+ }else { 
+ // Логин должен содержать цифры и латинские буквы 
+ 
+ echo "Логин должен содержать цифры и латинские буквы" ; 
+ } 
+ }else { 
+ // Пароль и подтверждение НЕ совпадают - выведем сообщение 
+ 
+ echo "Пароль и подтверждение НЕ совпадают" ; 
+ 
+ } 
+} 
+?> 
+<form action="" method="POST"> 
+ <input name="login" required> 
+ <input name="password" type="password" required> 
+ <input name="confirm" type="password" required> 
+ <input name="date" type="date" required> 
+ <input name="email" type="email" required> 
+ <input type="submit" value="Отправить"> 
+</form>
