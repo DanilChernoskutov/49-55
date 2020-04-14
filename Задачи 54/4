@@ -1,0 +1,62 @@
+personalArea.php:
+
+<?php
+session_start();
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$db_name = 'Baza.php';
+$link = mysqli_connect($host,$user,$password,$db_name) or die(mysqli_error($link));
+
+$id = $_SESSION['id'];
+$query ="SELECT * FROM users WHERE id='$id'";
+
+$result = mysqli_query($link,$query);
+$us = mysqli_fetch_assoc($result);
+
+if(!empty($_POST['name'])and !empty($_POST['surname'])and !empty($_POST['patronymic'])and !empty($_POST['birthday'])and !empty($_POST['e-mail'])and !empty($_POST['country']))
+{
+$name = $_POST['name'];
+$surname = $_POST['surname'];
+$patronymic = $_POST['patronymic'];
+$birthday = $_POST['birthday'];
+$mail = $_POST['e-mail'];
+$country = $_POST['country'];
+
+$query = "UPDATE users SET name='$name',surname='$surname',patronymic='$patronymic',birthday='$birthday',email='$mail',country='$country' WHERE id='$id'";
+mysqli_query($link,$query);
+header("Location: personalArea.php");
+}
+?>
+
+<meta charset ='UTF-8'>
+<?php echo $_SESSION['message'];?>
+<form action="" method="POST">
+
+Имя:<br>
+<input name="name" value = <?php echo $us['name'];?» <br><br>
+
+Фамилия:<br>
+<input name="surname" value = <?php echo $us['surname'];?» <br><br>
+
+Отчество:<br>
+<input name="patronymic" value = <?php echo $us['patronymic'];?» <br><br>
+
+
+<?php if(!empty($_SESSION['bitrhday_error'])) echo $_SESSION['birthday_error'].'<br><br>';?>
+Дата рождения:<br>
+<input name="birthday" type = "date" value = <?php echo $us['birthday'];?> ><br><br>
+<?php if(!empty($_SESSION['mail_error'])) echo $_SESSION['mail_error'].'<br><br>';?>
+E-mail:<br>
+<input type="mail" name="e-mail" value = <?php echo $us['email'];?> ><br><br>
+Страна проживания:<br>
+<select name = "country">
+<option selected> <?php echo $us['country']?></option>
+<option>Россия</option>
+<option>Белоруссия</option>
+<option>Казахстан</option>
+<option>Украина</option>
+<option>Армения</option>
+</select>
+<input type="submit" value="Сохранить изменения">
+</form>
