@@ -1,0 +1,55 @@
+Модифицируйте предыдущую задачу так, чтобы появилась еще и третья колонка, со ссылкой "удалить", с помощью которой админ сможет удалить любого пользователя.
+
+<?php
+session_start();
+if($_SESSION['auth'] and $_SESSION['status']=='admin')
+{
+echo 'admin.php';
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$db_name = 'Baza.php';
+$link = mysqli_connect($host,$user,$password,$db_name) or die(mysqli_error($link));
+deletePage($link);
+showPageTable($link);
+}
+else
+{
+?>
+<meta charset ='UTF-8'>
+<?php
+echo 'У вас нет прав доступа к данной странице!';
+}
+
+function showPageTable($link)
+{
+$query ="SELECT id,login,status FROM users";
+$result = mysqli_query($link,$query) or die(mysqli_error($link));
+
+for($data=[];$row=mysqli_fetch_assoc($result);$data[]=$row);
+
+$content ="<table> <tr><th>login</th><th>status</th><th>delete</th></tr>";
+foreach($data as $us)
+{
+$content.="<tr>
+<td>{$us['login']}</td>
+<td>{$us['status']}</td>
+<td><a href='?delete={$us['id']}'>delete</a></td>
+</tr>";
+}
+$content.='</table>';
+echo $content;
+
+}
+function deletePage($link)
+{
+if(isset($_GET['delete']))
+{
+$query = "DELETE FROM users WHERE id='{$_GET['delete']}'";
+$result = mysqli_query($link,$query) or die(mysqli_error($link));
+return true;
+}
+else
+return false;
+}
+?>
