@@ -1,0 +1,9 @@
+Модифицируйте ваш код так, чтобы нельзя было зарегистрировать пользователя с пустым логином или паролем.
+
+<input name="login" required> 
+ <input name="password" type="password" required>
+
+или
+
+if (!empty($_POST['login']) and !empty($_POST['password']) and !empty($_POST['confirm']) ){ 
+}
