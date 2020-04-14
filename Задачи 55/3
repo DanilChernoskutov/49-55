@@ -1,0 +1,18 @@
+Сделайте страницу admin.php, к которой будут иметь доступ только пользователи со статусом admin.
+
+admin.php:
+
+<?php
+session_start();
+if($_SESSION['auth'] and $_SESSION['status']=='admin')
+{
+echo 'admin.php';
+}
+else
+{
+?>
+<meta charset ='UTF-8'>
+<?php
+echo 'У вас нет прав доступа к данной странице!';
+}
+?>
