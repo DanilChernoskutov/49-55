@@ -1,0 +1,55 @@
+Реализуйте удаление аккаунта.
+
+delete.php:
+
+<?php
+session_start();
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$db_name = 'Baza.php';
+
+$link = mysqli_connect($host,$user,$password,$db_name) or die(mysqli_error($link));
+
+$id = $_SESSION['id'];
+
+
+$query = "SELECT * FROM users WHERE id = '$id'";
+$result = mysqli_query($link,$query);
+
+if(!empty($result))
+{
+$us = mysqli_fetch_assoc($result);
+$hash = $us['password'];
+if(password_verify($_POST['password'],$hash))
+{
+$_SESSION['delete_message']='Ваш аккаунт удалён!';
+unset($_SESSION['error']);
+$query = "DELETE FROM users WHERE id='$id'";
+mysqli_query($link,$query);
+unset($_SESSION['auth']);
+header('Location: index1.php');
+}
+else
+{
+unset($_SESSION['delete_message']);
+if(!empty($_POST['password']))
+{
+$_SESSION['error']='Вы ввели неверный пароль!';
+}
+}
+}
+else
+{
+header('Location: index1.php');die();
+}
+?>
+
+<meta charset ='UTF-8'>
+<form action="" method="POST">
+<?php echo $_SESSION['error'];?>
+<?php echo $_SESSION['delete_message'];?>
+Введите пароль:<br><br>
+<input name='password' type='password'><br><br>
+<input type="submit" value="Удалить аккаунт">
+</form>
