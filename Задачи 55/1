@@ -1,0 +1,158 @@
+Измените код регистрации так, чтобы все добавляемые пользователи получали статус user.
+register.php:
+
+<?php
+session_start();
+error_reporting(E_ALL);
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$db_name = 'Baza.php';
+$link = mysqli_connect($host,$user,$password,$db_name) or die(mysqli_error($link));
+
+if(empty($_SESSION['message']))
+{
+$_SESSION['message']='';
+}
+
+if(!empty($_POST['login'])and !empty($_POST['password'])and !empty($_POST['confirm'])and !empty($_POST['e-mail']) and !empty($_POST['birthday']) and !empty($_POST['country']) and !empty($_POST['name'])and !empty($_POST['surname'])and !empty($_POST['patronymic']))
+{
+
+$login = $_POST['login'];
+$password = password_hash($_POST['password'],PASSWORD_DEFAULT);
+
+$birthday = $_POST['birthday'];
+$mail=$_POST['e-mail'];
+$country = $_POST['country'];
+$name = $_POST['name'];
+$surname = $_POST['surname'];
+$patronymic = $_POST['patronymic'];
+}
+else
+{
+$login = '';
+$password = '';
+$confirm = '';
+$birthday = '';
+$mail='';
+$country = '';
+$name = '';
+$surname = '';
+$patronymic = '';
+}
+if(!empty($_POST['login'])and !empty($_POST['password'])and !empty($_POST['confirm'])and !empty($_POST['birthday'])and !empty($_POST['e-mail'])and !empty($_POST['country']))
+{
+$mail=$_POST['e-mail'];
+if(preg_match('#^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$#',$mail)==1)
+{
+unset($_SESSION['mail_error']);
+}
+else
+{
+$_SESSION['mail_error']="Некорректный e-mail";
+}
+
+$birthday = $_POST['birthday'];
+if(preg_match('#^(0[1-9]|[12][0-9]|3[01])[.](0[1-9]|1[012])[.](19|20)\d\d$#',$birthday)==1)
+{
+unset($_SESSION['$birthday_error']);
+}
+else
+{
+$_SESSION['$birthday_error']="Некорректная дата рождения";
+}
+
+
+if(preg_match('#^[a-z0-9]+$#',$login)==1)
+{
+if(strlen($login)>=4 and strlen($login)<=10)
+{
+unset($_SESSION['login_error']);
+if($_POST['password']==$_POST['confirm'])
+{
+if(strlen($_POST['password'])>=6 and strlen($_POST['password'])<=12)
+{
+unset($_SESSION['password_error']);
+$login = $_POST['login'];
+$query = "SELECT * FROM users WHERE login ='$login'";
+$result = mysqli_fetch_assoc(mysqli_query($link,$query));
+if(empty($result))
+{
+$_SESSION['auth']=true;
+$date = date('Y-m-d');
+//$query = "DELETE FROM users";
+//$query ="ALTER TABLE users ADD COLUMN status TEXT NOT NULL";
+
+$query ="INSERT INTO users SET status = 'user', name='$name',surname='$surname',patronymic='$patronymic', login='$login', password='$password',birthday = '$birthday', email ='$mail', registration_date = '$date', c
+$query ="INSERT INTO users SET status = 'user', name='$name',surname='$surname',patronymic='$patronymic', login='$login', password='$password',birthday = '$birthday', email ='$mail', registration_date = '$date', country = '$country'";
+mysqli_query($link,$query);
+$_SESSION['login'] = $login;
+$_SESSION['message'] = 'Вы зашли как '.$_SESSION['login'];
+$id = mysqli_insert_id($link);
+$_SESSION['id']=$id;
+}
+else
+{
+$_SESSION['message']= "Пользователь с таким логином уже существует!";
+}
+}
+else
+{
+$_SESSION['message']= "Пароль должен быть длиной от 6 до 12 символов!";
+$_SESSION['password_error'] = "Некорректный пароль!";
+}
+}
+else
+{
+echo "Введённые пароли не совпадают!";
+}
+}
+else
+{
+$_SESSION['message'] = "Логин должен быть длиной от 4 до 10 символов!";
+$_SESSION['login_error'] = "Некорректный логин!";
+}
+}
+else
+{
+$_SESSION['message'] = "Логин должен состоять из латинских символов или цифр!";
+$_SESSION['login_error'] = "Некорректный логин!";
+}
+}
+
+?>
+<meta charset ='UTF-8'>
+<?php echo $_SESSION['message'];?>
+<form action="" method="POST">
+<?php if(!empty($_SESSION['login_error'])) echo $_SESSION['login_error'].'<br><br>';?>
+Логин:<br>
+<input name="login" value = <?php echo $login;?» <br><br>
+<?php if(!empty($_SESSION['password_error'])) echo $_SESSION['password_error'].'<br><br>';?>
+Пароль:<br>
+<input name="password" type="password" value = <?php if(!empty($_POST['password'])) echo $_POST['password'];?»<br><br>
+Подтвердите пароль:<br>
+<input name="confirm" type="password" value = <?php if(!empty($_POST['confirm'])) echo $_POST['confirm'];?»<br><br>
+Имя:<br>
+<input name="name" value = <?php echo $name;?» <br><br>
+
+Фамилия:<br>
+<input name="surname" value = <?php echo $surname;?» <br><br>
+
+Отчество:<br>
+<input name="patronymic" value = <?php echo $patronymic;?» <br><br>
+
+
+<?php if(!empty($_SESSION['bitrhday_error'])) echo $_SESSION['birthday_error'].'<br><br>';?>
+Дата рождения:<br>
+<input name="birthday" type = "date" value = <?php echo $birthday;?> ><br><br>
+<?php if(!empty($_SESSION['mail_error'])) echo $_SESSION['mail_error'].'<br><br>';?>
+E-mail:<br>
+<input type="mail" name="e-mail" value = <?php echo $mail;?> ><br><br>
+Страна проживания:<br>
+<select name = "country">
+<option>Россия</option>
+<option>Белоруссия</option>
+<option>Казахстан</option>
+<option>Украина</option>
+<option>Армения</option>
+</select>
